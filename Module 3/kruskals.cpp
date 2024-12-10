@@ -1,69 +1,74 @@
-#include<iostream>
-#include <bits/stdc++.h>
+#include <iostream>
+#include <climits>
 using namespace std;
 
-#define V 5
+#define V 100 // Maximum number of vertices (changeable as per need)
 
 int parent[V];
 
 // Find set of vertex i
-int find(int i){
-	while (parent[i] != i)
-		i = parent[i];
-	return i;
+int find(int i) {
+    while (parent[i] != i)
+        i = parent[i];
+    return i;
 }
 
-// Does union of i and j. It returns false if i and j are already in same set.
-void union1(int i, int j)
-{
-	int a = find(i);
-	int b = find(j);
-	parent[a] = b;
+// Perform union of i and j
+void union1(int i, int j) {
+    int a = find(i);
+    int b = find(j);
+    parent[a] = b;
 }
 
-// Finds MST using Kruskal's algorithm
-void kruskalMST(int cost[][V])
-{
-	int mincost = 0; // Cost of min MST.
+// Find MST using Kruskal's algorithm
+void kruskalMST(int cost[][V], int n) {
+    int mincost = 0;
 
-	// Initialize sets of disjoint sets.
-	for (int i = 0; i < V; i++)
-		parent[i] = i;
+    // Initialize sets of disjoint sets
+    for (int i = 0; i < n; i++)
+        parent[i] = i;
 
-	// Include minimum weight edges one by one
-	int edge_count = 0;
-	while (edge_count < V - 1) {
-		int min = INT_MAX, a = -1, b = -1;
-		for (int i = 0; i < V; i++) {
-			for (int j = 0; j < V; j++) {
-				if (find(i) != find(j) && cost[i][j] < min) {
-					min = cost[i][j];
-					a = i;
-					b = j;
-				}
-			}
-		}
+    // Include minimum weight edges one by one
+    int edge_count = 0;
+    while (edge_count < n - 1) {
+        int min = INT_MAX, a = -1, b = -1;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (find(i) != find(j) && cost[i][j] != 0 && cost[i][j] < min) {
+                    min = cost[i][j];
+                    a = i;
+                    b = j;
+                }
+            }
+        }
 
-		union1(a, b);
-		printf("Edge %d:(%d, %d) cost:%d \n",
-			edge_count++, a, b, min);
-		mincost += min;
-	}
-	printf("\n Minimum cost= %d \n", mincost);
+        union1(a, b);
+        printf("Edge %d: (%d, %d) cost: %d\n", edge_count++, a, b, min);
+        mincost += min;
+    }
+    printf("\nMinimum cost = %d\n", mincost);
 }
 
-int main(){
-	int cost[][V] = {
-		{ INT_MAX, 2, INT_MAX, 6, INT_MAX },
-		{ 2, INT_MAX, 3, 8, 5 },
-		{ INT_MAX, 3, INT_MAX, INT_MAX, 7 },
-		{ 6, 8, INT_MAX, INT_MAX, 9 },
-		{ INT_MAX, 5, 7, 9, INT_MAX },
-	};
+int main() {
+    int n;
 
-	// Print the solution
-	kruskalMST(cost);
+    cout << "Enter the number of vertices: ";
+    cin >> n;
 
-	return 0;
+    int cost[V][V];
+
+    cout << "Enter the cost adjacency matrix (use 0 for no edge):\n";
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) {
+            cin >> cost[i][j];
+            if (cost[i][j] == 0) {
+                cost[i][j] = INT_MAX; // Convert 0 to INT_MAX internally
+            }
+        }
+    }
+
+    kruskalMST(cost, n);
+
+    return 0;
 }
 
